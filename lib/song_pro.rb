@@ -58,13 +58,16 @@ module SongPro
 
     line = Line.new
 
-    captures = text.scan(/[(\[\w.\])]?([\w\s'_"]+)/).flatten
+    captures = text.scan(/(\[\w+\])?([\w\s'_\-"]*)/i).flatten
 
     captures.each_slice(2) do |pair|
       part = Part.new
-      part.chord = pair[0]&.strip || ''
+      chord = pair[0]&.strip || ''
+      part.chord = chord.gsub('[','').gsub(']','')
       part.lyric = pair[1]&.strip || ''
-      line.parts << part
+      unless part.chord == '' and part.lyric == ''
+        line.parts << part
+      end
     end
     current_section.lines << line
   end
